@@ -9,10 +9,8 @@
       
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../print/">
       
-      
-        <link rel="next" href="../mugishuffle/">
       
       
       <link rel="icon" href="../assets/jolly.png">
@@ -20,7 +18,7 @@
     
     
       
-        <title>PRINT - minoru</title>
+        <title>MugiShuffle - minoru</title>
       
     
     
@@ -75,11 +73,6 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
-        
-        <a href="#installation" class="md-skip">
-          Skip to content
-        </a>
-      
     </div>
     <div data-md-component="announce">
       
@@ -111,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              PRINT
+              MugiShuffle
             
           </span>
         </div>
@@ -277,6 +270,29 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../print/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PRINT
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -287,79 +303,7 @@
       
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    PRINT
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    PRINT
-    
-  </span>
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      installation
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      usage
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../mugishuffle/" class="md-nav__link">
         
   
   
@@ -370,6 +314,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -400,32 +345,6 @@
   
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      installation
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      usage
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -440,21 +359,276 @@
 
 
 
-  <h1>PRINT</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random List Splitter</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-<p><a href="https://github.com/gabrielminoru/PRINT">PRINT</a> is just a function to make prints look nice</p>
-<p><img alt="print-example-hello-world" src="../assets/print.png" /></p>
-<h3 id="installation">installation</h3>
-<pre><code class="language-bash">pip install mino-print
-</code></pre>
-<p>or <em>even</em> better</p>
-<pre><code class="language-bash">uv add mino-print
-</code></pre>
-<h3 id="usage">usage</h3>
-<pre><code class="language-python">import PRINT
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-PRINT('hello, world!')
-</code></pre>
+        .container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        @media (min-width: 768px) {
+            .content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .input-section {
+            grid-column: 1 / -1;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            border-color: #4b6cb7;
+            outline: none;
+        }
+
+        .btn {
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result-section {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #4b6cb7;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            text-align: center;
+        }
+
+        .result-list {
+            list-style-type: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result-list li {
+            background-color: white;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .result-list li:before {
+            content: "•";
+            color: #4b6cb7;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-right: 10px;
+        }
+
+        .set-label {
+            display: inline-block;
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+        .empty-message {
+            color: #888;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Random List Splitter</h1>
+            <p class="description">Enter your list of items and split them randomly into two groups</p>
+        </header>
+
+        <div class="content">
+            <div class="input-section">
+                <textarea id="listInput" placeholder="Enter your list items here, one per line. For example:
+Apple
+Banana
+Orange
+Grapes
+Mango"></textarea>
+                <button id="splitBtn" class="btn">Split List Randomly</button>
+            </div>
+
+            <div class="result-section">
+                <h2>Set 1</h2>
+                <ul id="set1" class="result-list">
+                    <li class="empty-message">Results will appear here</li>
+                </ul>
+            </div>
+
+            <div class="result-section">
+                <h2>Set 2</h2>
+                <ul id="set2" class="result-list">
+                    <li class="empty-message">Results will appear here</li>
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <p>Enter your list items, one per line, and click "Split List Randomly" to divide them into two groups</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const listInput = document.getElementById('listInput');
+            const splitBtn = document.getElementById('splitBtn');
+            const set1Element = document.getElementById('set1');
+            const set2Element = document.getElementById('set2');
+
+            splitBtn.addEventListener('click', function() {
+                // Get input and split by newline
+                const inputText = listInput.value.trim();
+
+                if (!inputText) {
+                    alert('Please enter some items first!');
+                    return;
+                }
+
+                // Split by line breaks and filter out empty lines
+                const items = inputText.split('\n')
+                    .map(item => item.trim())
+                    .filter(item => item.length > 0);
+
+                if (items.length < 2) {
+                    alert('Please enter at least two items to split!');
+                    return;
+                }
+
+                // Shuffle the array randomly
+                const shuffledItems = [...items].sort(() => Math.random() - 0.5);
+
+                // Split into two sets
+                const midpoint = Math.ceil(shuffledItems.length / 2);
+                const set1 = shuffledItems.slice(0, midpoint);
+                const set2 = shuffledItems.slice(midpoint);
+
+                // Display the results
+                displaySet(set1Element, set1, 'Set 1');
+                displaySet(set2Element, set2, 'Set 2');
+            });
+
+            function displaySet(container, items, setName) {
+                // Clear previous content
+                container.innerHTML = '';
+
+                if (items.length === 0) {
+                    container.innerHTML = '<li class="empty-message">No items in this set</li>';
+                    return;
+                }
+
+                // Add each item to the list
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span class="set-label">${setName}</span> ${item}`;
+                    container.appendChild(li);
+                });
+            }
+
+            // Add example list on load
+            listInput.value = "Apple\nBanana\nOrange\nGrapes\nMango\nPineapple\nStrawberry\nBlueberry\nWatermelon\nPeach";
+        });
+    </script>
+</body>
+</html>
 
 
 

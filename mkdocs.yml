@@ -16,7 +16,6 @@ nav:
   - projects:
       - PRINT: print.md
       - Davy Back Fight: davybackfight.md
-      - pxg: pxg.md
       - bichodle: bichodle.md
 extra:
   social:

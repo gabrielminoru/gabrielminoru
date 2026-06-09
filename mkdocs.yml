@@ -1,0 +1,24 @@
+site_name: minoru
+extra_css:
+  - stylesheet/typewriter.css
+theme:
+  name: material
+  custom_dir: docs/overrides
+  font:
+    code: Roboto Mono
+  logo: assets/jolly.png
+  favicon: assets/jolly.png
+  palette:
+    # Palette toggle for dark mode
+    - scheme: slate
+nav:
+  - home: index.md
+  - projects:
+      - PRINT: print.md
+      - Davy Back Fight: davybackfight.md
+      - pxg: pxg.md
+      - bichodle: bichodle.md
+extra:
+  social:
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/minorugabriel/

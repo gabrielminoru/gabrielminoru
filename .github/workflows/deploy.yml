@@ -20,4 +20,8 @@ jobs:
       - run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          mkdocs gh-deploy --force
+          # Fetch the published branch so the deploy commit is added on top of
+          # its history. Without it gh-deploy builds a parentless commit, and
+          # pushing that would replace gh-pages wholesale.
+          git fetch origin gh-pages:gh-pages
+          mkdocs gh-deploy

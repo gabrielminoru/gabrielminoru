@@ -1,3 +1,3 @@
 <p align="center">
-  <img src="./sea/sea.svg" alt="today's sea" />
+  <img src="https://raw.githubusercontent.com/gabrielminoru/gabrielminoru/output/sea.svg" alt="the sea right now" />
 </p>

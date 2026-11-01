@@ -10,33 +10,46 @@ frames = 48
 frame_time = 0.12
 sea_level = 6
 max_crest = rows - 6  # keep the top rows for the sun and clouds
+horizon = rows - sea_level
 cloud_step_time = 0.5
 rain_step = 20
+lunar_month = 29.530588
+new_moon = datetime.datetime(2000, 1, 6, 18, 14, tzinfo=datetime.timezone.utc)
+
+# clear-weather sky through the day, as (hour, top color, horizon color)
+night = ((0x0A, 0x0F, 0x24), (0x1C, 0x27, 0x4A))
+dawn = ((0x3B, 0x4C, 0x8F), (0xF4, 0xA7, 0x6A))
+day = ((0x2E, 0x7F, 0xD6), (0xA8, 0xDB, 0xFF))
+dusk = ((0x2D, 0x2A, 0x6B), (0xF0, 0x7B, 0x4F))
+sky_by_hour = [(0, *night), (4.5, *night), (6, *dawn), (7.5, *day), (16.5, *day), (18, *dusk), (19.5, *night), (24, *night)]
+storm_day = ((0x16, 0x1A, 0x21), (0x55, 0x5F, 0x6B))
+storm_night = ((0x06, 0x08, 0x0D), (0x18, 0x1C, 0x24))
 
 # colors blend from calm to storm as the intensity rises
 calm = {
-    "sky_top": (0x2E, 0x7F, 0xD6),
-    "sky_horizon": (0xA8, 0xDB, 0xFF),
     "cloud": (0xFF, 0xFF, 0xFF),
     "surface": (0x3C, 0xB0, 0xE6),
     "deep": (0x00, 0x1A, 0x3D),
 }
 storm = {
-    "sky_top": (0x16, 0x1A, 0x21),
-    "sky_horizon": (0x55, 0x5F, 0x6B),
     "cloud": (0x3A, 0x40, 0x4A),
     "surface": (0x4F, 0x7C, 0x94),
     "deep": (0x04, 0x0E, 0x1A),
 }
-sun_color = "#FFE07A"
-foam_color = "#EAF8FF"
+sun_color = (0xFF, 0xE0, 0x7A)
+low_sun_color = (0xFF, 0x8A, 0x3D)
+moon_color = "#E9E6D3"
+foam_color = (0xEA, 0xF8, 0xFF)
 rain_color = "#A9BCCF"
 label_color = "#EAF8FF"
 states = ["glassy", "calm", "choppy", "rough", "stormy"]
 
-today = datetime.date.today().isoformat()
+brt = datetime.timezone(datetime.timedelta(hours=-3), "BRT")
+now = datetime.datetime.now(brt)
+today = now.date().isoformat()
 rng = random.Random(today)  # same sea all day, new sea tomorrow
 intensity = float(sys.argv[1]) if len(sys.argv) > 1 else rng.random()
+hour = float(sys.argv[2]) if len(sys.argv) > 2 else now.hour + now.minute / 60
 
 
 def mix(a, b, t):
@@ -49,6 +62,26 @@ def to_hex(color):
 
 def palette(name):
     return mix(calm[name], storm[name], intensity)
+
+
+def elevation(h):
+    # 1 at the top of its arc, 0 on the horizon, negative below it
+    return math.sin(math.pi * (h - 6) / 12)
+
+
+daylight = min(max((elevation(hour) + 0.15) / 0.45, 0), 1)
+light = 0.3 + 0.7 * daylight
+
+
+def sky_colors():
+    for (h0, top0, bottom0), (h1, top1, bottom1) in zip(sky_by_hour, sky_by_hour[1:]):
+        if h0 <= hour <= h1:
+            t = (hour - h0) / (h1 - h0)
+            top, bottom = mix(top0, top1, t), mix(bottom0, bottom1, t)
+            break
+    storm_top = mix(storm_night[0], storm_day[0], daylight)
+    storm_bottom = mix(storm_night[1], storm_day[1], daylight)
+    return mix(top, storm_top, intensity), mix(bottom, storm_bottom, intensity)
 
 
 def make_waves():
@@ -100,16 +133,59 @@ def block(x, y, color, w=1, h=1):
     return f'<rect x="{x * cell}" y="{y * cell}" width="{w * cell}" height="{h * cell}" fill="{color}"/>'
 
 
-def sun():
-    if intensity >= 0.6:
-        return []
-    cx, cy, radius = cols - 10, 3, 2.5
+def disc(cx, cy, color, lit=lambda nx, ny: True, radius=2.5):
+    cx, cy = round(cx), round(cy)  # centered on a cell so the disc stays round
     return [
-        block(x, y, sun_color)
-        for y in range(rows)
-        for x in range(cols)
-        if (x - cx) ** 2 + (y - cy) ** 2 <= radius**2
+        block(x, y, color)
+        for y in range(round(cy - radius), round(cy + radius) + 1)
+        for x in range(round(cx - radius), round(cx + radius) + 1)
+        if (x - cx) ** 2 + (y - cy) ** 2 <= radius**2 and lit((x - cx) / radius, (y - cy) / radius)
     ]
+
+
+def arc(h):
+    # crosses the sky left to right in 12 hours, rising from and setting into the sea
+    return cols * (h % 24 - 6) / 12, horizon - (horizon - 3) * elevation(h)
+
+
+def sun():
+    if intensity >= 0.6 or elevation(hour) < -0.15:
+        return []
+    color = mix(low_sun_color, sun_color, min(max(elevation(hour) * 3, 0), 1))
+    return disc(*arc(hour), to_hex(color))
+
+
+def moon():
+    moon_hour = hour + 12  # rises around sunset, sets around sunrise
+    if intensity >= 0.6 or elevation(moon_hour) < -0.15:
+        return []
+    phase = (now - new_moon).total_seconds() / 86400 % lunar_month / lunar_month
+
+    def lit(nx, ny):
+        terminator = math.cos(2 * math.pi * phase) * math.sqrt(max(1 - ny**2, 0))
+        side = -nx  # seen from the southern hemisphere, the moon waxes on the left
+        return side > terminator if phase < 0.5 else side < -terminator
+
+    return disc(*arc(moon_hour), moon_color, lit)
+
+
+def stars():
+    if daylight >= 0.6:
+        return []
+    star_rng = random.Random(today + "stars")  # own generator so the hour doesn't move the clouds
+    brightness = (1 - daylight / 0.6) * (1 - intensity)
+    parts = []
+    for i in range(round(50 * (1 - intensity))):
+        x = star_rng.randrange(cols * cell)
+        y = star_rng.randrange((horizon - 1) * cell)
+        twinkle = [round(brightness, 2)] * frames
+        twinkle[star_rng.randrange(frames)] = round(brightness * 0.3, 2)
+        parts.append(
+            f'<rect x="{x}" y="{y}" width="2" height="2" fill="#FFFFFF" opacity="{twinkle[0]}">'
+            + animate("opacity", twinkle)
+            + "</rect>"
+        )
+    return parts
 
 
 def make_cloud(x0, y0, color, underside):
@@ -123,8 +199,8 @@ def make_cloud(x0, y0, color, underside):
     return parts
 
 
-def clouds():
-    color = palette("cloud")
+def clouds(sky_horizon):
+    color = mix(mix((0, 0, 0), palette("cloud"), light), sky_horizon, 0.25)
     underside = to_hex(mix(color, (0, 0, 0), 0.15))
     shapes = []
     for i in range(1 + round(intensity * 7)):
@@ -175,6 +251,7 @@ def lightning():
 
 
 def water(heights):
+    crest_color = to_hex(mix((0, 0, 0), foam_color, 0.5 + 0.5 * daylight))
     parts = []
     for x in range(cols):
         tops = [(rows - heights[f][x]) * cell for f in range(frames)]
@@ -186,7 +263,7 @@ def water(heights):
         )
         if any(foams):
             parts.append(
-                f'<rect x="{x * cell}" y="{tops[0]}" width="{cell}" height="{foams[0]}" fill="{foam_color}">'
+                f'<rect x="{x * cell}" y="{tops[0]}" width="{cell}" height="{foams[0]}" fill="{crest_color}">'
                 + animate("y", tops)
                 + animate("height", foams)
                 + "</rect>"
@@ -200,8 +277,12 @@ def render():
     width = cols * cell
     height = rows * cell
     state = states[min(int(intensity * len(states)), len(states) - 1)]
-    sky = banded_gradient("sky", palette("sky_top"), palette("sky_horizon"), 0, rows - 1)
-    depth = banded_gradient("depth", palette("surface"), palette("deep"), rows - sea_level - 2, rows - 1)
+    clock = f"{int(hour) % 24:02d}:{int(hour % 1 * 60):02d}"
+    sky_top, sky_horizon = sky_colors()
+    sky = banded_gradient("sky", sky_top, sky_horizon, 0, rows - 1)
+    surface_color = mix((0, 0, 0), palette("surface"), light)
+    deep_color = mix((0, 0, 0), palette("deep"), light)
+    depth = banded_gradient("depth", surface_color, deep_color, horizon - 2, rows - 1)
 
     return "\n".join(
         [
@@ -210,14 +291,16 @@ def render():
             f"<defs>{sky}{depth}</defs>",
             f'<rect width="{width}" height="{height}" fill="url(#sky)"/>',
         ]
+        + stars()
         + sun()
+        + moon()
         + rain()
-        + clouds()
+        + clouds(sky_horizon)
         + lightning()
         + water(heights)
         + [
             f'<text x="4" y="{height - 4}" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" '
-            f'font-size="9" fill="{label_color}" opacity="0.8">sea state: {state} · {today}</text>',
+            f'font-size="9" fill="{label_color}" opacity="0.8">sea state: {state} · {today} {clock} BRT</text>',
             "</svg>",
         ]
     )

@@ -1,5 +1,3 @@
-![](./profile-3d-contrib/profile-south-season-animate.svg)
-
 <p align="center">
   <img src="./sea/sea-glassy.svg" alt="glassy sea" /><br />
   <img src="./sea/sea-calm.svg" alt="calm sea" /><br />
